@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>BarCode Scanner - PhoneGapPro.com</title>
+ <script type="text/javascript" src="cordova.js"></script>
+ <script type="text/javascript">
+ function scan(){
+ console.log("clicked");
+ cordova.plugins.barcodeScanner.scan(function(result){
+ //success callback
+ //alert(JSON.stringify(result));
+
+var txt = (JSON.stringify(result));
+document.getElementById("demo2").innerHTML = "http://isbndb.com/api/v2/json/K1XA9ULM/book/".concat(result["text"]);
+
+var html1 = "<a href=\"http://isbndb.com/api/v2/json/K1XA9ULM/book/";
+var html2 = "\" target=\"_blank\">here</a>";
+
+//var txt = (JSON.stringify(result));
+
+var more = result["text"];
+
+var total = html1.concat(more).concat(html2);
+
+document.getElementById("demo").innerHTML = total;
+
+
+ });
+ }
+ </script>
+</head>
+<body>
+ <h3>BAR CODE SCANNER</h3>
+ <button onclick="scan()">SCAN</button>
+<p id="demo2"></p>
+<p id="demo"></p>
+
+</body>
+</html>
