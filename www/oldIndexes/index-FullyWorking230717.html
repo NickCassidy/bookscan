@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>BarCode Scanner - PhoneGapPro.com</title>
+ <script type="text/javascript" src="cordova.js"></script>
+<script src="https://mysqljs.com/mysql.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+ <script type="text/javascript">
+ function scan(){
+ 
+ console.log("Scan started");
+ 
+ cordova.plugins.barcodeScanner.scan(function(result){
+ //success callback
+
+//alert(JSON.stringify(result));
+// the barcodeScanner app returns a json file comprising an array of three items: {"cancelled":0, "text":"THE ISBN NUMBER", "format":"isbn format"} and these are stored in the result variable. To access the isbn number, we select the second item in the array: result["text"] 
+
+//retrieve json and convert to array
+var txt = (JSON.stringify(result));
+
+// build and display the url
+//document.getElementById("demo").innerHTML = "http://isbndb.com/api/v2/json/K1XA9ULM/book/".concat(result["text"]);
+
+var isbnNumber = result["text"];
+
+//full url only K1XA9ULM is isbndb API key
+var firstPartURL = "http://isbndb.com/api/v2/json/K1XA9ULM/book/";
+
+// if variable is set without var = it has global scope
+completeURL = firstPartURL.concat(isbnNumber);
+
+
+//flush any old content from the divs on the page 
+    document.getElementById("demo1").innerHTML="";
+    document.getElementById("demo2").innerHTML="";
+    document.getElementById("demo3").innerHTML="";
+
+// call next step
+  read_json();
+
+});
+}
+
+
+//------- start jquery to parse API json...
+// convert book json into array uses heroukapp url to workaround cross site scripting
+
+function read_json(){
+//$.getJSON('http://cors-anywhere.herokuapp.com/http://isbndb.com/api/v2/json/K1XA9ULM/book/9780192804571', function(bookArray) {
+    //console.log(bookArray.index_searched);
+
+    $.getJSON(completeURL, function(bookArray) {
+  
+  // if book not found, display error msg
+  if (bookArray.error){
+    alert(bookArray.error);
+function javascript_abort()
+{
+}
+  }
+
+    //console.log(bookArray.index_searched);
+    console.log(bookArray.data[0].summary);
+    console.log(bookArray.data[0].title);
+    console.log(bookArray.data[0].long_title);
+
+//save data in variable for posting into DB
+summary = bookArray.data[0].summary;
+title = bookArray.data[0].title;
+longTitle = bookArray.data[0].long_title;
+
+//display title of book in 'demo' div in html
+document.getElementById("demo1").innerHTML += bookArray.data[0].title;
+document.getElementById("demo2").innerHTML += bookArray.data[0].long_title;
+document.getElementById("demo3").innerHTML += bookArray.data[0].summary;
+
+//call next step
+openBrowser();
+
+});
+};
+//--------endjquery to parse API json...
+
+
+
+
+//for openBrowser functionality if want to use a link: <div id="openBrowser">open</div>
+//document.getElementById("openBrowser").addEventListener("click", openBrowser);
+// this code renders json from API on a new browser page after user hits GO button
+
+
+function openBrowser() {
+   
+   var url = completeURL;
+   var target = '_blank';
+   var options = "location=yes"
+   var ref = cordova.InAppBrowser.open(url, target, options);
+
+   ref.addEventListener('loadstart', loadstartCallback);
+   ref.addEventListener('loadstop', loadstopCallback);
+   ref.addEventListener('loadloaderror', loaderrorCallback);
+   ref.addEventListener('exit', exitCallback);
+
+   function loadstartCallback(event) {
+      console.log('Loading started: '  + event.url)
+   }
+
+   function loadstopCallback(event) {
+      console.log('Loading finished: ' + event.url)
+   }
+
+   function loaderrorCallback(error) {
+      console.log('Loading error: ' + error.message)
+   }
+
+   function exitCallback() {
+      console.log('Browser is closed...')
+   }
+
+
+/*-----*/
+/* this code calls a js service that handles posting/retrieving mysql data 
+http://www.mysqljs.com/
+see script tag at top of page and <pre> tag below
+*/
+
+
+MySql.Execute(
+    "sql8.freemysqlhosting.net", 
+    "sql8185513", 
+    "zwqj58T6c3", 
+    "sql8185513", 
+
+"insert into books (title, long_title, summary, rating) VALUES ('"+title+"','"+longTitle+"','"+summary+"', '2.4')",
+
+function (data) {
+//console.log(data)
+
+});
+}
+
+</script>
+
+</head>
+<body>
+ <h3>BOOK SCAN</h3>
+ <button onclick="scan()">SCAN</button>
+<p id="demo1"></p>
+<p id="demo2"></p>
+<p id="demo3"></p>
+</body>
+</html>

@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript">
+        
+//var bookCookie = 'yes';
+
+// save book id into cookie for later on...
+//document.cookie = "book_id=bookCookie"; 
+
+//console.log('Cookie set :'.concat(bookCookie));
+
+function setCookie(cookieName, cookieValue)
+{
+    document.cookie = cookieName + "=" + cookieValue;
+}
+
+setCookie("book_id","yo");
+setCookie("fish","cod");
+
+var pork = "kljlkj";
+document.cookie = 'testCookie=' + pork;
+
+//alert (document.cookie);
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+getCookie("book_id");
+alert(document.cookie);
+getCookie("fish");
+alert(document.cookie);
+getCookie("testCookie");
+alert(document.cookie);
+
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
+
+
